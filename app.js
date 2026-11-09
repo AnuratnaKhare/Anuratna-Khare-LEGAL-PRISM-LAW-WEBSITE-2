@@ -1,0 +1,35 @@
+const resources = [
+ {title:"Constitutional Law — Introduction & Preamble",category:"Class Notes",language:"Bilingual",subject:"Constitutional Law",description:"An introductory study resource covering constitutional philosophy, features and the Preamble.",date:"Sample resource",icon:"▤"},
+ {title:"Bharatiya Nyaya Sanhita, 2023",category:"Bare Acts",language:"English",subject:"Criminal Law",description:"Reference entry for the new criminal law. Verify the latest official text and amendments.",date:"Reference library",icon:"§"},
+ {title:"Maneka Gandhi v. Union of India",category:"Case Laws",language:"English",subject:"Constitutional Law",description:"Landmark Article 21 judgment. Add the official citation and judgment PDF before publication.",date:"Case study",icon:"⚖"},
+ {title:"Law of Evidence — Practice Quiz",category:"MCQs",language:"Hindi",subject:"Evidence Law",description:"Practice questions for revision with answer explanations to be added by the editor.",date:"Practice",icon:"☷"},
+ {title:"LL.B. Semester Examination — Model Paper",category:"Previous Papers",language:"Bilingual",subject:"LL.B.",description:"Sample question paper entry. Replace with an authorised university paper.",date:"Model paper",icon:"▧"},
+ {title:"Research Methodology in Legal Studies",category:"Research",language:"English",subject:"Research",description:"A resource entry for research design, doctrinal methods and academic writing.",date:"Research guide",icon:"¶"},
+ {title:"Weekly Legal Developments",category:"Legal News",language:"English",subject:"Legal Updates",description:"Sample news placeholder. Add verified reporting, publication date and source URL before publishing.",date:"Sample update",icon:"▤"},
+ {title:"Legal Research Internship Opportunities",category:"Career",language:"English",subject:"Career",description:"Career resource placeholder. Add verified organisation, eligibility and official application link.",date:"Opportunity",icon:"↗"},
+ {title:"Video Lectures & YouTube Lessons",category:"Video Lectures",language:"Bilingual",subject:"Video Learning",description:"Add verified lecture videos, YouTube links and playlists through the contribution form.",date:"Learning hub",icon:"▶"},
+ {title:"Audio Lectures & Podcasts",category:"Audio Lectures",language:"Bilingual",subject:"Audio Learning",description:"Add MP3, WAV, M4A and other audio learning resources through the contribution form.",date:"Learning hub",icon:"♫"}
+];
+const grid=document.getElementById('resourceGrid'), empty=document.getElementById('emptyState');
+function render(list){grid.innerHTML=list.map(r=>`<article class="resource-card"><div class="resource-top"><span class="resource-type">${esc(r.category)}</span><span class="file-icon">${r.icon||'▤'}</span></div><h3>${esc(r.title)}</h3><p>${esc(r.description)}</p><div class="resource-meta"><span>${esc(r.language||'English')} · ${esc(r.date||'')}</span><button type="button" data-view="${esc(r.title)}">View details →</button></div></article>`).join('');empty.classList.toggle('hidden',list.length>0)}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function filter(){const q=(document.getElementById('resourceSearch').value+' '+document.getElementById('globalSearch').value).trim().toLowerCase(),cat=document.getElementById('typeFilter').value,lang=document.getElementById('languageFilter').value;render(resources.filter(r=>(!q||[r.title,r.category,r.subject,r.description].join(' ').toLowerCase().includes(q))&&(!cat||r.category===cat)&&(!lang||r.language===lang)))}
+render(resources);
+document.getElementById('resourceSearch').addEventListener('input',filter);
+document.getElementById('globalSearch').addEventListener('keydown',e=>{if(e.key==='Enter'){document.getElementById('resourceSearch').value=e.target.value;document.getElementById('allResources').scrollIntoView();filter()}});
+['typeFilter','languageFilter'].forEach(id=>document.getElementById(id).addEventListener('change',filter));
+document.querySelectorAll('[data-search]').forEach(b=>b.addEventListener('click',()=>{document.getElementById('globalSearch').value=b.dataset.search;document.getElementById('resourceSearch').value=b.dataset.search;document.getElementById('allResources').scrollIntoView();filter()}));
+document.querySelectorAll('[data-category]').forEach(b=>b.addEventListener('click',()=>{document.getElementById('typeFilter').value=b.dataset.category;document.getElementById('allResources').scrollIntoView();filter()}));
+grid.addEventListener('click',e=>{const b=e.target.closest('[data-view]');if(b)toast('Resource preview: '+b.dataset.view+'. Add a verified file or source link in the admin CMS.')});
+const uploadModal=document.getElementById('uploadModal'),loginModal=document.getElementById('loginModal');
+function show(m){m.classList.remove('hidden');document.body.style.overflow='hidden'}
+function hide(m){m.classList.add('hidden');document.body.style.overflow=''}
+['uploadTop','heroUpload','contributeBtn','footerUpload'].forEach(id=>document.getElementById(id).addEventListener('click',e=>{e.preventDefault();show(uploadModal)}));
+['loginBtn','footerLogin'].forEach(id=>document.getElementById(id).addEventListener('click',e=>{e.preventDefault();show(loginModal)}));
+document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',()=>hide(b.closest('.modal-backdrop'))));
+[uploadModal,loginModal].forEach(m=>m.addEventListener('click',e=>{if(e.target===m)hide(m)}));
+document.getElementById('menuToggle').addEventListener('click',()=>document.getElementById('mainNav').classList.toggle('open'));
+document.getElementById('uploadForm').addEventListener('submit',e=>{e.preventDefault();const fd=new FormData(e.target),f=fd.get('file');const submission={title:fd.get('title'),category:fd.get('category'),language:fd.get('language'),subject:fd.get('subject'),description:fd.get('description'),mediaType:fd.get('mediaType'),youtubeUrl:fd.get('youtubeUrl'),mediaUrl:fd.get('mediaUrl'),fileName:f?.name||'',submittedAt:new Date().toISOString(),status:'Pending review'};const saved=JSON.parse(localStorage.getItem('lexlearn_submissions')||'[]');saved.push(submission);localStorage.setItem('lexlearn_submissions',JSON.stringify(saved));e.target.reset();hide(uploadModal);toast('Submission saved in this browser demo. Backend required for real uploads.')});
+document.getElementById('loginForm').addEventListener('submit',e=>{e.preventDefault();hide(loginModal);toast('Demo sign-in only. Configure secure authentication for production.')});
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(window._toastTimer);window._toastTimer=setTimeout(()=>t.classList.remove('show'),3600)}
+document.getElementById('year').textContent=new Date().getFullYear();
