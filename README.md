@@ -66,3 +66,17 @@ For production, connect a backend such as Supabase or Firebase (authentication, 
 - Instagram: https://www.instagram.com/anuratnakharelaw/
 
 The contribution form now includes document/image/audio/video file selection, a media type field, a YouTube URL field, and an external media URL field. The frontend accepts common formats including MP3, WAV, OGG, M4A, AAC, FLAC, MP4, MOV, WEBM, AVI, MKV, WMV, 3GP, MPEG, plus common documents and images. Actual upload limits and codec/container support must be validated by the backend and hosting provider. Do not assume every browser can preview every media format.
+
+## Super Admin panel (Supabase)
+1. Keep `admin.html`, `admin.css`, `admin.js`, and `supabase-config.js` in the same repository root as `index.html`.
+2. In `supabase-config.js`, set `LEGAL_PRISM_SUPABASE_URL` and `LEGAL_PRISM_SUPABASE_ANON_KEY` from Supabase → Project Settings → API. Use only the publishable/anon public key. Never use a service-role/secret key in frontend files.
+3. Deploy the updated files to the same GitHub Pages branch/root.
+4. Open `https://YOUR-PAGES-URL/admin.html`, then sign in with the Supabase Auth user whose UID has the `super_admin` role in `public.admin_roles`.
+5. The page checks `public.is_super_admin()` before showing the dashboard.
+
+### Important production notes
+- This is a first admin-panel integration for the schema created in Supabase. The public homepage still uses its original sample resource array until its frontend is connected to read live database rows.
+- The video bucket is private. This panel stores the object path for uploaded videos; a server-side/signed-URL playback flow must be added before those videos can be played by visitors.
+- Student Auth account creation/deletion is intentionally not exposed in browser JavaScript. Use a protected server-side Supabase Edge Function for privileged Auth administration.
+- The earlier SQL setup must have run successfully, including the `admin_roles` table, `is_super_admin()` function, CRUD policies, and four storage buckets. Keep RLS enabled. Test with a non-admin account before launch.
+- The current storage bucket limits are those configured in the supplied SQL: 50 MB study materials, 100 MB video, 20 MB audio, 5 MB website assets. Supabase plan limits also apply.

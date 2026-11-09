@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#102744">
+  <title>Super Admin — Legal Prism Law</title>
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <header class="top">
+    <a class="brand" href="index.html"><span class="mark">§</span><span>Legal Prism Law<small>SUPER ADMIN CONSOLE</small></span></a>
+    <div class="top-right"><span id="signedInAs" class="muted"></span><button id="logoutBtn" class="btn secondary hidden">Sign out</button></div>
+  </header>
+
+  <main class="wrap">
+    <section id="configWarning" class="notice warning hidden">
+      <b>Supabase configuration required.</b>
+      Open <code>supabase-config.js</code> and add your Project URL and publishable (anon) key from Supabase → Project Settings → API. Never use a service-role or secret key in browser code.
+    </section>
+
+    <section id="loginPanel" class="login-card">
+      <div class="eyebrow">RESTRICTED ACCESS</div>
+      <h1>Super Admin Login</h1>
+      <p>Sign in with the admin user you created in Supabase Authentication.</p>
+      <form id="loginForm">
+        <label>Email<input name="email" type="email" autocomplete="username" required placeholder="Your admin email"></label>
+        <label>Password<input name="password" type="password" autocomplete="current-password" required placeholder="Your password"></label>
+        <button class="btn primary full" type="submit">Sign in securely</button>
+        <p id="loginMessage" class="message" role="status"></p>
+      </form>
+      <a href="index.html" class="back">← Back to website</a>
+    </section>
+
+    <section id="deniedPanel" class="login-card hidden">
+      <div class="eyebrow">ACCESS DENIED</div><h1>Admin permission not found</h1>
+      <p>This account is signed in, but Supabase did not confirm the <code>super_admin</code> role. Check the Admin UID in <code>public.admin_roles</code>.</p>
+      <button id="deniedLogout" class="btn secondary">Sign out</button>
+    </section>
+
+    <section id="dashboard" class="hidden">
+      <div class="welcome"><div><div class="eyebrow">LEGAL PRISM LAW</div><h1>Super Admin Dashboard</h1><p>Manage website branding, learning resources and media.</p></div><span class="secure">● Verified admin</span></div>
+      <div id="notice" class="notice hidden" role="status"></div>
+      <div class="stats">
+        <article><span>Resources</span><b id="countResources">—</b></article>
+        <article><span>Bare Acts</span><b id="countActs">—</b></article>
+        <article><span>Case Laws</span><b id="countCases">—</b></article>
+        <article><span>Pending Uploads</span><b id="countPending">—</b></article>
+      </div>
+      <nav class="tabs" aria-label="Admin sections">
+        <button class="tab active" data-tab="branding">Branding</button>
+        <button class="tab" data-tab="resources">Resources</button>
+        <button class="tab" data-tab="acts">Bare Acts</button>
+        <button class="tab" data-tab="cases">Case Laws</button>
+        <button class="tab" data-tab="videos">Videos</button>
+        <button class="tab" data-tab="audio">Audio</button>
+        <button class="tab" data-tab="students">Students</button>
+        <button class="tab" data-tab="approvals">Approvals</button>
+      </nav>
+
+      <section class="panel active" id="panel-branding">
+        <h2>Website branding</h2><p class="hint">Change the site title, tagline, logo and social links. Upload a logo to the website-assets bucket.</p>
+        <form id="brandingForm" class="form-grid">
+          <label>Website name<input name="site_name" required value="Legal Prism Law"></label>
+          <label>Tagline<input name="tagline" value="Your Legal Expert"></label>
+          <label>Contact email<input name="contact_email" type="email" placeholder="official@example.com"></label>
+          <label>YouTube URL<input name="youtube_url" type="url" placeholder="https://youtube.com/@..."></label>
+          <label>Instagram URL<input name="instagram_url" type="url" placeholder="https://instagram.com/..."></label>
+          <label>Logo image<input name="logo" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml"></label>
+          <label>Favicon image<input name="favicon" type="file" accept="image/png,image/jpeg,image/webp,image/x-icon"></label>
+          <div class="form-actions"><button class="btn primary" type="submit">Save branding</button></div>
+        </form>
+      </section>
+
+      <section class="panel" id="panel-resources">
+        <h2>Study resources</h2><p class="hint">Add a PDF, Word document, presentation or image. New entries are published immediately.</p>
+        <form id="resourceForm" class="form-grid">
+          <label>Title<input name="title" required></label>
+          <label>Category<select name="category"><option>Class Notes</option><option>Bare Acts</option><option>Case Laws</option><option>MCQs</option><option>Previous Papers</option><option>Research</option><option>Legal News</option><option>Career</option></select></label>
+          <label>Language<select name="language"><option>Hindi</option><option>English</option><option>Bilingual</option></select></label>
+          <label>Subject<input name="subject"></label>
+          <label class="wide">Description<textarea name="description" rows="3"></textarea></label>
+          <label class="wide">File<input name="file" type="file" accept=".pdf,.doc,.docx,.ppt,.pptx,.jpg,.jpeg,.png,.webp"></label>
+          <div class="form-actions"><button class="btn primary" type="submit">Upload & publish resource</button></div>
+        </form>
+        <div id="resourceList" class="records"></div>
+      </section>
+
+      <section class="panel" id="panel-acts">
+        <h2>Bare Acts</h2>
+        <form id="actForm" class="form-grid">
+          <label>Act name<input name="act_name" required></label><label>Year<input name="act_year" type="number"></label>
+          <label>Act number<input name="act_number"></label><label>PDF<input name="file" type="file" accept="application/pdf"></label>
+          <div class="form-actions"><button class="btn primary" type="submit">Add Bare Act</button></div>
+        </form><div id="actList" class="records"></div>
+      </section>
+
+      <section class="panel" id="panel-cases">
+        <h2>Case Laws</h2>
+        <form id="caseForm" class="form-grid">
+          <label>Case name<input name="case_name" required></label><label>Citation<input name="citation"></label>
+          <label>Court<input name="court"></label><label>Judgment date<input name="judgment_date" type="date"></label>
+          <label class="wide">Summary<textarea name="summary" rows="3"></textarea></label>
+          <label>Judgment PDF<input name="file" type="file" accept="application/pdf"></label>
+          <div class="form-actions"><button class="btn primary" type="submit">Add Case Law</button></div>
+        </form><div id="caseList" class="records"></div>
+      </section>
+
+      <section class="panel" id="panel-videos">
+        <h2>Video lectures</h2>
+        <form id="videoForm" class="form-grid">
+          <label>Lecture title<input name="title" required></label>
+          <label>Video type<select name="video_type"><option value="youtube">YouTube URL</option><option value="storage">Upload MP4/WebM</option></select></label>
+          <label class="wide">YouTube / video URL<input name="video_url" type="url" placeholder="https://www.youtube.com/watch?v=..."></label>
+          <label class="wide">Video file (max 100 MB as configured)<input name="file" type="file" accept="video/mp4,video/webm"></label>
+          <div class="form-actions"><button class="btn primary" type="submit">Save video lecture</button></div>
+        </form><div id="videoList" class="records"></div>
+      </section>
+
+      <section class="panel" id="panel-audio">
+        <h2>Audio lectures</h2>
+        <form id="audioForm" class="form-grid">
+          <label>Audio title<input name="title" required></label>
+          <label>Audio file<input name="file" type="file" accept="audio/mpeg,audio/mp4,audio/wav"></label>
+          <div class="form-actions"><button class="btn primary" type="submit">Upload audio</button></div>
+        </form><div id="audioList" class="records"></div>
+      </section>
+
+      <section class="panel" id="panel-students">
+        <h2>Student profiles</h2><p class="hint">This lists profile rows stored in the student_profiles table. Creating or deleting Auth accounts should be done through a secured server-side Edge Function or the Supabase Dashboard—not browser code.</p>
+        <div id="studentList" class="records"></div>
+      </section>
+
+      <section class="panel" id="panel-approvals">
+        <h2>Student upload approvals</h2><p class="hint">Review submissions before publishing them.</p>
+        <div id="approvalList" class="records"></div>
+      </section>
+    </section>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>
