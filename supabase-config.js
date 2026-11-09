@@ -5,5 +5,5 @@
   Use the Project URL and the publishable/anon public key only.
   NEVER paste the service_role/secret key into this file.
 */
-window.LEGAL_PRISM_SUPABASE_URL = "PASTE_YOUR_SUPABASE_PROJECT_URL";
-window.LEGAL_PRISM_SUPABASE_ANON_KEY = "PASTE_YOUR_SUPABASE_PUBLISHABLE_OR_ANON_KEY";
+window.LEGAL_PRISM_SUPABASE_URL = "https://ajkxxaqthkutcqekavgt.supabase.co";
+window.LEGAL_PRISM_SUPABASE_ANON_KEY = "sb_publishable_opU6fjDGN0-BPIQVBzL20Q_tqSWTkKR";
